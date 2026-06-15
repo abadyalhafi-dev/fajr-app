@@ -221,14 +221,27 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () async {
-                await _alarm.rescheduleAll();
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('تم تحديث جميع التنبيهات'),
-                      backgroundColor: AppTheme.navyLight,
-                    ),
-                  );
+                try {
+                  await _alarm.requestPermissions();
+                  await _alarm.rescheduleAll();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('تم تحديث جميع التنبيهات'),
+                        backgroundColor: AppTheme.navyLight,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('خطأ: $e'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 8),
+                      ),
+                    );
+                  }
                 }
               },
               icon: const Icon(Icons.refresh),
