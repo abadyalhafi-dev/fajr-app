@@ -6,8 +6,6 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Restore Android wrapper & scaffolding
-        script: flutter create . --platforms=android --project-name fajr_app --org com.example
       - name: Get Flutter packages
         script: flutter pub get
       - name: Build release APK
@@ -17,7 +15,6 @@ workflows:
     publishing:
       email:
         recipients:
-          # Replace with your email to receive the APK automatically.
           - your-email@example.com
         notify:
           success: true
