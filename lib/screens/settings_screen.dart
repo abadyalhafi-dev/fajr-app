@@ -1,0 +1,199 @@
+import 'package:flutter/material.dart';
+
+import '../services/location_service.dart';
+import '../services/storage_service.dart';
+import '../services/alarm_service.dart';
+import '../theme/app_theme.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final LocationService _location = LocationService();
+  final StorageService _storage = StorageService();
+  final AlarmService _alarm = AlarmService();
+  bool _loadingLocation = false;
+
+  final List<Map<String, String>> _prayers = const [
+    {'key': 'fajr', 'name': 'الفجر'},
+    {'key': 'dhuhr', 'name': 'الظهر'},
+    {'key': 'asr', 'name': 'العصر'},
+    {'key': 'maghrib', 'name': 'المغرب'},
+    {'key': 'isha', 'name': 'العشاء'},
+  ];
+
+  Future<void> _refreshLocation() async {
+    setState(() => _loadingLocation = true);
+    final result = await _location.fetchAndSave();
+    await _alarm.rescheduleAll();
+    setState(() => _loadingLocation = false);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.message),
+          backgroundColor: AppTheme.navyLight,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('الإعدادات')),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          children: [
+            // Location
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, color: AppTheme.gold),
+                        const SizedBox(width: 10),
+                        const Text('الموقع',
+                            style: TextStyle(
+                                color: AppTheme.goldSoft,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'المدينة: ${_storage.cityName}\n'
+                      'خط العرض: ${_storage.latitude.toStringAsFixed(4)}\n'
+                      'خط الطول: ${_storage.longitude.toStringAsFixed(4)}',
+                      style: const TextStyle(
+                          color: AppTheme.muted, fontSize: 13, height: 1.6),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: _loadingLocation ? null : _refreshLocation,
+                      icon: _loadingLocation
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: AppTheme.navy),
+                            )
+                          : const Icon(Icons.my_location),
+                      label: const Text('تحديث الموقع'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Calculation method (fixed: Umm al-Qura)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.calculate, color: AppTheme.gold),
+                title: const Text('طريقة الحساب',
+                    style: TextStyle(color: AppTheme.cream)),
+                subtitle: const Text('أم القرى',
+                    style: TextStyle(color: AppTheme.muted)),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Manual adjustments
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text('تعديل الأوقات (بالدقائق)',
+                          style: TextStyle(
+                              color: AppTheme.goldSoft,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(height: 4),
+                    ..._prayers.map((p) {
+                      final adj = _storage.prayerAdjustment(p['key']!);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: Text(p['name']!,
+                                  style: const TextStyle(
+                                      color: AppTheme.cream)),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline,
+                                  color: AppTheme.muted),
+                              onPressed: () async {
+                                await _storage.setPrayerAdjustment(
+                                    p['key']!, adj - 1);
+                                await _alarm.rescheduleAll();
+                                setState(() {});
+                              },
+                            ),
+                            Text('$adj',
+                                style: const TextStyle(
+                                    color: AppTheme.goldSoft, fontSize: 16)),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outline,
+                                  color: AppTheme.muted),
+                              onPressed: () async {
+                                await _storage.setPrayerAdjustment(
+                                    p['key']!, adj + 1);
+                                await _alarm.rescheduleAll();
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Permissions helper
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.security, color: AppTheme.gold),
+                title: const Text('أذونات التنبيه',
+                    style: TextStyle(color: AppTheme.cream)),
+                subtitle: const Text(
+                    'فعّل الأذونات وتجاهل تحسين البطارية لضمان عمل المنبه',
+                    style: TextStyle(color: AppTheme.muted)),
+                trailing: const Icon(Icons.chevron_left, color: AppTheme.muted),
+                onTap: () async {
+                  await _alarm.requestPermissions();
+                },
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Center(
+              child: Text('تطبيق منبه الفجر • إصدار 1.0',
+                  style: TextStyle(color: AppTheme.muted, fontSize: 12)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
