@@ -1,0 +1,24 @@
+workflows:
+  android-apk:
+    name: Build Fajr App APK
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: Restore Android wrapper & scaffolding
+        script: flutter create . --platforms=android --project-name fajr_app --org com.example
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/**/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          # Replace with your email to receive the APK automatically.
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
