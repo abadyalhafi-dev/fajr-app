@@ -149,13 +149,15 @@ class AlarmService {
     required String payload,
   }) async {
     final tzTime = tz.TZDateTime.from(when, tz.local);
-    await _plugin.zonedSchedule(
+  await _plugin.zonedSchedule(
       id,
       title,
       body,
       tzTime,
       NotificationDetails(android: _alarmDetails),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
     );
   }
