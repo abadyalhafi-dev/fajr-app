@@ -26,21 +26,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     {'key': 'isha', 'name': 'العشاء'},
   ];
 
-  Future<void> _refreshLocation() async {
+ Future<void> _refreshLocation() async {
     setState(() => _loadingLocation = true);
-    final result = await _location.fetchAndSave();
-    await _alarm.rescheduleAll();
-    setState(() => _loadingLocation = false);
+    LocationResult result;
+    try {
+      result = await _location.fetchAndSave();
+      try {
+        await _alarm.rescheduleAll();
+      } catch (_) {
+        // Rescheduling can fail on its own; location is still saved.
+      }
+    } catch (e) {
+      result = LocationResult(false, 'خطأ: $e');
+    } finally {
+      if (mounted) setState(() => _loadingLocation = false);
+    }
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result.message),
-          backgroundColor: AppTheme.navyLight,
+          backgroundColor: result.success ? AppTheme.navyLight : Colors.red,
+          duration: const Duration(seconds: 6),
         ),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
