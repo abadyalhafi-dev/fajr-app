@@ -26,7 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     {'key': 'isha', 'name': 'العشاء'},
   ];
 
- Future<void> _refreshLocation() async {
+  Future<void> _refreshLocation() async {
     setState(() => _loadingLocation = true);
     LocationResult result;
     try {
@@ -51,6 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,6 +167,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 await _storage.setPrayerAdjustment(
                                     p['key']!, adj + 1);
                                 await _alarm.rescheduleAll();
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Iqama offsets (minutes after Adhan)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text('وقت الإقامة (دقائق بعد الأذان)',
+                          style: TextStyle(
+                              color: AppTheme.goldSoft,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(height: 4),
+                    ..._prayers.map((p) {
+                      final iq = _storage.iqamaOffset(p['key']!);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: Text(p['name']!,
+                                  style: const TextStyle(
+                                      color: AppTheme.cream)),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline,
+                                  color: AppTheme.muted),
+                              onPressed: () async {
+                                if (iq > 0) {
+                                  await _storage.setIqamaOffset(
+                                      p['key']!, iq - 1);
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                            Text('$iq',
+                                style: const TextStyle(
+                                    color: AppTheme.goldSoft, fontSize: 16)),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outline,
+                                  color: AppTheme.muted),
+                              onPressed: () async {
+                                await _storage.setIqamaOffset(
+                                    p['key']!, iq + 1);
                                 setState(() {});
                               },
                             ),
