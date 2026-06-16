@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:alarm/alarm.dart';
 
 import 'theme/app_theme.dart';
 import 'main_navigation.dart';
@@ -16,49 +15,36 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Each step is guarded so a failure can never block the app from starting.
   try {
     await initializeDateFormatting('ar', null);
   } catch (_) {}
-
   try {
     await StorageService().init();
   } catch (_) {}
-
   try {
-    await AlarmService().init(_onAlarmTap);
+    await AlarmService().init();
   } catch (_) {}
 
-  try {
-    await AndroidAlarmManager.initialize();
-  } catch (_) {}
+  // When an alarm rings (app open OR launched by the alarm), show our screen.
+  Alarm.ringing.listen((alarmSet) {
+    for (final alarm in alarmSet.alarms) {
+      final payload = alarm.payload ?? '';
+      final isMain = payload.startsWith(AlarmService.payloadMain);
+      final key = payload.contains(':') ? payload.split(':').last : 'fajr';
+      final name = PrayerService.arabicNames[key] ?? 'الصلاة';
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => AlarmRingingScreen(
+            alarmId: alarm.id,
+            isMain: isMain,
+            prayerName: name,
+          ),
+        ),
+      );
+    }
+  });
 
-  // Start the UI immediately. Alarm scheduling happens later, after
-  // permissions are granted (see _FajrAppState.initState).
   runApp(const FajrApp());
-}
-
-@pragma('vm:entry-point')
-Future<void> _dailyReschedule() async {
-  try {
-    await StorageService().init();
-    await AlarmService().init((_) {});
-    await AlarmService().rescheduleAll();
-  } catch (_) {}
-}
-
-@pragma('vm:entry-point')
-void _onAlarmTap(NotificationResponse response) {
-  final payload = response.payload ?? '';
-  final isMain = payload.startsWith(AlarmService.payloadMain);
-  final key = payload.split(':').last;
-  final name = PrayerService.arabicNames[key] ?? 'الصلاة';
-
-  navigatorKey.currentState?.push(
-    MaterialPageRoute(
-      builder: (_) => AlarmRingingScreen(isMain: isMain, prayerName: name),
-    ),
-  );
 }
 
 class FajrApp extends StatefulWidget {
@@ -73,28 +59,11 @@ class _FajrAppState extends State<FajrApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Ask for permissions first, THEN schedule everything.
       try {
         await AlarmService().requestPermissions();
       } catch (_) {}
-
-      try {
-        await AndroidAlarmManager.periodic(
-          const Duration(hours: 12),
-          1357,
-          _dailyReschedule,
-          wakeup: true,
-          rescheduleOnReboot: true,
-        );
-      } catch (_) {}
-
       try {
         await AlarmService().rescheduleAll();
-      } catch (_) {}
-
-      try {
-        final response = await AlarmService().launchPayload();
-        if (response != null) _onAlarmTap(response);
       } catch (_) {}
     });
   }
