@@ -9,12 +9,10 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-subprojects {
-    project.evaluationDependsOn(":app")
-}
 
-// Auto-fix for older plugins (e.g. flutter_compass) that don't declare a
-// namespace, which the current Android Gradle Plugin requires.
+// Namespace auto-fix for older plugins (e.g. flutter_compass) that don't
+// declare one. MUST be registered before evaluationDependsOn below, otherwise
+// the project is already evaluated and afterEvaluate throws.
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
@@ -25,6 +23,10 @@ subprojects {
             }
         }
     }
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
