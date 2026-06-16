@@ -74,6 +74,23 @@ class StorageService {
   Future<void> setPrayerAdjustment(String prayerKey, int minutes) =>
       _prefs.setInt('$_prefixAdjust$prayerKey', minutes);
 
+  // ---------------- Iqama offsets (minutes after Adhan) ----------------
+  static const _prefixIqama = 'iqama_';
+  static const Map<String, int> _iqamaDefaults = {
+    'fajr': 25,
+    'dhuhr': 20,
+    'asr': 25,
+    'maghrib': 10,
+    'isha': 20,
+  };
+
+  int iqamaOffset(String prayerKey) =>
+      _prefs.getInt('$_prefixIqama$prayerKey') ??
+      (_iqamaDefaults[prayerKey] ?? 15);
+
+  Future<void> setIqamaOffset(String prayerKey, int minutes) =>
+      _prefs.setInt('$_prefixIqama$prayerKey', minutes);
+
   // ---------------- Personal events ----------------
   static const _kEvents = 'personal_events';
 
