@@ -16,7 +16,7 @@ class AlarmService {
   final StorageService _storage = StorageService();
 
   // Bundled sounds (must exist in assets/sounds/).
-  static const String _mainSound = 'assets/sounds/adhan_madinah.mp3';
+  static const String _mainSound = 'assets/sounds/adhan_madinah.m4a';
   static const String _preSound = 'assets/sounds/default_alarm.wav';
 
   // Payload prefixes so the UI knows which screen text to show.
