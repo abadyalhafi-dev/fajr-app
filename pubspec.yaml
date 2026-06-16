@@ -12,8 +12,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # Prayer time calculation (offline, Umm al-Qura)
+  # Prayer time calculation (offline, Umm al-Qura) + Qibla direction
   adhan: ^2.0.0
+
+  # Compass sensor for Qibla direction
+  flutter_compass: ^0.8.0
 
   # Native alarm engine (rings even when app is killed)
   alarm: ^5.2.1
