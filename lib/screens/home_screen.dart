@@ -5,6 +5,7 @@ import 'package:hijri/hijri_calendar.dart';
 import '../services/prayer_service.dart';
 import '../services/storage_service.dart';
 import '../widgets/countdown_card.dart';
+import '../widgets/iqama_countdown_card.dart';
 import '../widgets/prayer_list.dart';
 import '../widgets/mosque_logo.dart';
 import '../theme/app_theme.dart';
@@ -94,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
 
               const CountdownCard(),
+              const IqamaCountdownCard(),
               const SizedBox(height: 20),
 
               Align(
