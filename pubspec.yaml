@@ -12,21 +12,20 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # Prayer time calculation (fully offline, supports Umm al-Qura)
+  # Prayer time calculation (offline, Umm al-Qura)
   adhan: ^2.0.0
+
+  # Native alarm engine (rings even when app is killed)
+  alarm: ^5.2.1
 
   # Location
   geolocator: ^13.0.1
   permission_handler: ^11.3.1
 
-  # Alarms & notifications
-  flutter_local_notifications: ^18.0.1
-  android_alarm_manager_plus: ^4.0.4
-  audioplayers: ^6.1.0
-
-  # Sound file picking + stable storage
+  # Sound file picking + stable storage (used by settings + test-play)
   file_picker: ^8.1.2
   path_provider: ^2.1.4
+  audioplayers: ^6.1.0
 
   # Calendar + Hijri dates
   table_calendar: ^3.1.2
@@ -39,7 +38,6 @@ dependencies:
   google_fonts: ^6.2.1
 
   # Misc
-  timezone: ^0.9.4
   intl: any
   cupertino_icons: ^1.0.8
 
