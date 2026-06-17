@@ -16,7 +16,7 @@ class AlarmService {
   final StorageService _storage = StorageService();
 
   // Bundled sounds (must exist in assets/sounds/).
-  static const String _mainSound = 'assets/sounds/adhan_madinah.m4a';
+  static const String _mainSound = 'assets/sounds/adhan_madinah.mp3';
   static const String _preSound = 'assets/sounds/default_alarm.wav';
 
   // Payload prefixes so the UI knows which screen text to show.
@@ -117,14 +117,14 @@ class AlarmService {
       id: id,
       dateTime: when,
       assetAudioPath: asset,
-      loopAudio: true,
-      vibrate: true,
+      loopAudio: false,
+      vibrate: _storage.vibrationEnabled,
       warningNotificationOnKill: false,
       androidFullScreenIntent: true,
       volumeSettings: VolumeSettings.fade(
         volume: 1.0,
         fadeDuration: const Duration(seconds: 5),
-        volumeEnforced: true,
+        volumeEnforced: false,
       ),
       notificationSettings: _notif(title),
       payload: payload,
