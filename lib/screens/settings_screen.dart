@@ -44,8 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.message),
-          backgroundColor: result.success ? AppTheme.navyLight : Colors.red,
+          content: Text(result.message,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w700)),
+          backgroundColor:
+              result.success ? Colors.green.shade700 : Colors.red.shade700,
           duration: const Duration(seconds: 6),
         ),
       );
