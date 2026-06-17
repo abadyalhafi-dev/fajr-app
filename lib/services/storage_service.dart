@@ -48,12 +48,19 @@ class StorageService {
   static const _prefixEnabled = 'alarm_enabled_';
 
   bool isPrayerAlarmEnabled(String prayerKey) {
-    if (prayerKey == 'fajr') return true; // Fajr always on
-    return _prefs.getBool('$_prefixEnabled$prayerKey') ?? false;
+    // Fajr defaults ON but can be turned off; others default OFF.
+    final defaultValue = prayerKey == 'fajr';
+    return _prefs.getBool('$_prefixEnabled$prayerKey') ?? defaultValue;
   }
 
   Future<void> setPrayerAlarmEnabled(String prayerKey, bool value) =>
       _prefs.setBool('$_prefixEnabled$prayerKey', value);
+
+  // Vibration on alarm — default ON
+  static const _kVibration = 'vibration_enabled';
+  bool get vibrationEnabled => _prefs.getBool(_kVibration) ?? true;
+  Future<void> setVibrationEnabled(bool value) =>
+      _prefs.setBool(_kVibration, value);
 
   // Fajr pre-alarm (15 min before) toggle — default ON
   static const _kPreAlarmEnabled = 'pre_alarm_enabled';
