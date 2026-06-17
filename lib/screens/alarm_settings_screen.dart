@@ -18,8 +18,9 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
   final StorageService _storage = StorageService();
   final AlarmService _alarm = AlarmService();
 
-  // Prayers that can be toggled (Fajr is fixed ON).
-  final List<Map<String, String>> _otherPrayers = const [
+  // All five prayers, each individually toggleable. Fajr defaults ON.
+  final List<Map<String, String>> _prayers = const [
+    {'key': 'fajr', 'name': 'الفجر'},
     {'key': 'dhuhr', 'name': 'الظهر'},
     {'key': 'asr', 'name': 'العصر'},
     {'key': 'maghrib', 'name': 'المغرب'},
@@ -32,7 +33,6 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
     );
     if (result == null || result.files.single.path == null) return;
 
-    // Copy into app storage so the path stays stable.
     final src = File(result.files.single.path!);
     final dir = await getApplicationDocumentsDirectory();
     final name = isMain ? 'fajr_adhan' : 'pre_alarm';
@@ -61,41 +61,50 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
-            // ---- Fajr (always on) ----
+            // ---- Prayer alarms (all five, Fajr included) ----
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.brightness_3, color: AppTheme.gold),
-                        const SizedBox(width: 10),
-                        const Text('الفجر',
-                            style: TextStyle(
-                                color: AppTheme.goldSoft,
-                                fontSize: 19,
-                                fontWeight: FontWeight.w800)),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.gold.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text('مفعّل دائمًا',
-                              style: TextStyle(
-                                  color: AppTheme.goldSoft, fontSize: 12)),
-                        ),
-                      ],
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text('أذان الصلوات',
+                          style: TextStyle(
+                              color: AppTheme.goldSoft,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700)),
                     ),
-                    const Divider(color: AppTheme.navyLight, height: 24),
-                    // Pre-alarm toggle
+                    const SizedBox(height: 4),
+                    ..._prayers.map((p) => SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(p['name']!,
+                              style: const TextStyle(color: AppTheme.cream)),
+                          value: _storage.isPrayerAlarmEnabled(p['key']!),
+                          onChanged: (v) async {
+                            await _storage.setPrayerAlarmEnabled(
+                                p['key']!, v);
+                            setState(() {});
+                          },
+                        )),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // ---- Fajr pre-alarm ----
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('التنبيه المبكر',
+                      title: const Text('التنبيه المبكر للفجر',
                           style: TextStyle(color: AppTheme.cream)),
                       subtitle: Text(
                           'قبل ${_storage.preAlarmMinutes} دقيقة من الفجر',
@@ -106,7 +115,6 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                         setState(() {});
                       },
                     ),
-                    // Minutes slider
                     Row(
                       children: [
                         const Text('الدقائق:',
@@ -130,6 +138,27 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // ---- General (vibration) ----
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary:
+                      const Icon(Icons.vibration, color: AppTheme.gold),
+                  title: const Text('الاهتزاز عند التنبيه',
+                      style: TextStyle(color: AppTheme.cream)),
+                  value: _storage.vibrationEnabled,
+                  onChanged: (v) async {
+                    await _storage.setVibrationEnabled(v);
+                    setState(() {});
+                  },
                 ),
               ),
             ),
@@ -184,40 +213,6 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
               ),
             ),
 
-            const SizedBox(height: 8),
-
-            // ---- Other prayers ----
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerRight,
-                      child: Text('باقي الصلوات',
-                          style: TextStyle(
-                              color: AppTheme.goldSoft,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700)),
-                    ),
-                    const SizedBox(height: 4),
-                    ..._otherPrayers.map((p) => SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(p['name']!,
-                              style: const TextStyle(color: AppTheme.cream)),
-                          value: _storage.isPrayerAlarmEnabled(p['key']!),
-                          onChanged: (v) async {
-                            await _storage.setPrayerAlarmEnabled(
-                                p['key']!, v);
-                            setState(() {});
-                          },
-                        )),
-                  ],
-                ),
-              ),
-            ),
-
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () async {
@@ -226,9 +221,13 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   await _alarm.rescheduleAll();
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('تم تحديث جميع التنبيهات'),
-                        backgroundColor: AppTheme.navyLight,
+                      SnackBar(
+                        content: const Text('تم تحديث جميع التنبيهات',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700)),
+                        backgroundColor: Colors.green.shade700,
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   }
@@ -236,8 +235,11 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('خطأ: $e'),
-                        backgroundColor: Colors.red,
+                        content: Text('خطأ: $e',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700)),
+                        backgroundColor: Colors.red.shade700,
                         duration: const Duration(seconds: 8),
                       ),
                     );
