@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/location_service.dart';
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
+import 'city_picker_screen.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -100,7 +101,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   strokeWidth: 2, color: AppTheme.navy),
                             )
                           : const Icon(Icons.my_location),
-                      label: const Text('تحديث الموقع'),
+                      label: const Text('تحديد الموقع تلقائيًا (GPS)'),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () async {
+                        final changed = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const CityPickerScreen()),
+                        );
+                        if (changed == true && mounted) setState(() {});
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.goldSoft,
+                        side: const BorderSide(color: AppTheme.gold),
+                      ),
+                      icon: const Icon(Icons.location_city),
+                      label: const Text('اختيار المدينة يدويًا'),
                     ),
                   ],
                 ),
