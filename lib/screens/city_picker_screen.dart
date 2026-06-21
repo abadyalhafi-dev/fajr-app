@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/cities.dart';
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 /// Manual city picker: choose a country from a dropdown, then a city from the
@@ -56,7 +57,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('تم اختيار ${city.ar}',
+          content: Text(trp('city_selected', {'city': city.ar}),
               style: const TextStyle(
                   color: Colors.white, fontWeight: FontWeight.w700)),
           backgroundColor: Colors.green.shade700,
@@ -71,7 +72,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
   Widget build(BuildContext context) {
     final cities = _visibleCities;
     return Scaffold(
-      appBar: AppBar(title: const Text('اختيار المدينة')),
+      appBar: AppBar(title: Text(tr('select_city'))),
       body: SafeArea(
         child: Column(
           children: [
@@ -82,7 +83,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
                 children: [
                   const Align(
                     alignment: Alignment.centerRight,
-                    child: Text('الدولة',
+                    child: Text(tr('country'),
                         style: TextStyle(
                             color: AppTheme.muted, fontSize: 14)),
                   ),
@@ -127,7 +128,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
                     style: const TextStyle(color: AppTheme.cream),
                     onChanged: (v) => setState(() => _query = v),
                     decoration: InputDecoration(
-                      hintText: 'ابحث عن مدينة...',
+                      hintText: tr('search_city'),
                       hintStyle: const TextStyle(color: AppTheme.muted),
                       prefixIcon:
                           const Icon(Icons.search, color: AppTheme.muted),
@@ -146,7 +147,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
             Expanded(
               child: cities.isEmpty
                   ? const Center(
-                      child: Text('لا توجد نتائج',
+                      child: Text(tr('no_results'),
                           style: TextStyle(color: AppTheme.muted)),
                     )
                   : ListView.separated(
