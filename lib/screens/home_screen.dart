@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:hijri/hijri_calendar.dart';
 
 import '../services/prayer_service.dart';
 import '../services/storage_service.dart';
+import '../l10n/strings.dart';
 import '../widgets/countdown_card.dart';
 import '../widgets/iqama_countdown_card.dart';
 import '../widgets/prayer_list.dart';
@@ -47,10 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final now = DateTime.now();
 
     final gregorian =
-        DateFormat('EEEE، d MMMM yyyy', 'ar').format(now);
+        '${weekdayName(now.weekday)} - ${now.day} ${gregMonthName(now.month)} ${now.year}';
     final hijri = HijriCalendar.now();
     final hijriStr =
-        '${hijri.hDay} ${_hijriMonthAr(hijri.hMonth)} ${hijri.hYear} هـ';
+        '${hijri.hDay} ${hijriMonthName(hijri.hMonth)} ${hijri.hYear} ${tr('hijri_suffix')}';
 
     return Scaffold(
       body: SafeArea(
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('منبه الفجر',
+                      Text(tr('app_title'),
                           style: TextStyle(
                               color: AppTheme.goldSoft,
                               fontSize: 22,
@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               Align(
                 alignment: Alignment.centerRight,
-                child: Text('أوقات اليوم',
+                child: Text(tr('today_times'),
                     style: TextStyle(
                         color: AppTheme.muted,
                         fontSize: 15,
@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(builder: (_) => const QiblaScreen()),
                   ),
                   icon: const Icon(Icons.explore),
-                  label: const Text('اتجاه القبلة'),
+                  label: Text(tr('qibla_direction')),
                 ),
               ),
             ],
@@ -147,23 +147,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  String _hijriMonthAr(int m) {
-    const months = [
-      'محرم',
-      'صفر',
-      'ربيع الأول',
-      'ربيع الآخر',
-      'جمادى الأولى',
-      'جمادى الآخرة',
-      'رجب',
-      'شعبان',
-      'رمضان',
-      'شوال',
-      'ذو القعدة',
-      'ذو الحجة',
-    ];
-    return months[(m - 1) % 12];
   }
 }
