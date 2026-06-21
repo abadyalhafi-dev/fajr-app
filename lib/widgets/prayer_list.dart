@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/prayer_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 /// Today's full prayer list as rows inside a card.
@@ -74,7 +75,7 @@ class _PrayerRow extends StatelessWidget {
               color: highlighted ? AppTheme.gold : AppTheme.muted, size: 22),
           const SizedBox(width: 14),
           Text(
-            slot.arabicName,
+            tr('prayer_${slot.key}'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: highlighted ? FontWeight.w800 : FontWeight.w600,
