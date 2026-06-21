@@ -16,17 +16,33 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _index = 0;
 
-  final _screens = const [
-    HomeScreen(),
-    CalendarScreen(),
-    AlarmSettingsScreen(),
-    SettingsScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild all tabs immediately when the language changes.
+    appLang.addListener(_onLang);
+  }
+
+  void _onLang() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    appLang.removeListener(_onLang);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screens = [
+      HomeScreen(),
+      CalendarScreen(),
+      AlarmSettingsScreen(),
+      SettingsScreen(),
+    ];
     return Scaffold(
-      body: IndexedStack(index: _index, children: _screens),
+      body: IndexedStack(index: _index, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
