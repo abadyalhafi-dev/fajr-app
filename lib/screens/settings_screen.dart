@@ -197,7 +197,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerRight,
                       child: Text(tr('adjust_times'),
                           style: TextStyle(
@@ -259,7 +259,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerRight,
                       child: Text(tr('iqama_time'),
                           style: TextStyle(
@@ -320,9 +320,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.security, color: AppTheme.gold),
                 title: Text(tr('alarm_permissions'),
                     style: TextStyle(color: AppTheme.cream)),
-                subtitle: const Text(
+                subtitle: Text(
                     tr('permissions_desc'),
-                    style: TextStyle(color: AppTheme.muted)),
+                    style: const TextStyle(color: AppTheme.muted)),
                 trailing: const Icon(Icons.chevron_left, color: AppTheme.muted),
                 onTap: () async {
                   await _alarm.requestPermissions();
