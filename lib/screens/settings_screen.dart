@@ -4,6 +4,7 @@ import '../services/location_service.dart';
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
 import 'city_picker_screen.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -64,6 +65,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
+            // Language picker
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.language, color: AppTheme.gold),
+                        const SizedBox(width: 10),
+                        Text(tr('language'),
+                            style: const TextStyle(
+                                color: AppTheme.goldSoft,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: kSupportedLangs.map((code) {
+                        final selected = appLang.value == code;
+                        return ChoiceChip(
+                          label: Text(kLangNames[code] ?? code),
+                          selected: selected,
+                          onSelected: (_) async {
+                            appLang.value = code;
+                            await _storage.setLanguage(code);
+                            if (mounted) setState(() {});
+                          },
+                          selectedColor: AppTheme.gold,
+                          backgroundColor: AppTheme.navyLight,
+                          labelStyle: TextStyle(
+                            color: selected ? AppTheme.navy : AppTheme.cream,
+                            fontWeight:
+                                selected ? FontWeight.w700 : FontWeight.w500,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
             // Location
             Card(
               child: Padding(
