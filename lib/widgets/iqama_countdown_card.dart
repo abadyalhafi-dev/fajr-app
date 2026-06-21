@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/prayer_service.dart';
 import '../services/storage_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 /// Shows a live countdown to Iqama, but only during the window between an
@@ -74,7 +75,8 @@ class _IqamaCountdownCardState extends State<IqamaCountdownCard> {
             children: [
               const Icon(Icons.groups, color: AppTheme.gold, size: 20),
               const SizedBox(width: 8),
-              Text('إقامة ${active.arabicName} بعد',
+              Text(
+                  trp('iqama_after', {'name': tr('prayer_${active.key}')}),
                   style: const TextStyle(
                       color: AppTheme.goldSoft,
                       fontSize: 16,
