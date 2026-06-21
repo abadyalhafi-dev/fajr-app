@@ -69,7 +69,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerRight,
                       child: Text(tr('prayers_adhan'),
                           style: TextStyle(
@@ -172,7 +172,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerRight,
                       child: Text(tr('sounds'),
                           style: TextStyle(
