@@ -196,18 +196,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
             TextField(
               controller: titleCtrl,
               style: const TextStyle(color: AppTheme.cream),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: tr('title_label'),
-                labelStyle: TextStyle(color: AppTheme.muted),
+                labelStyle: const TextStyle(color: AppTheme.muted),
               ),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: noteCtrl,
               style: const TextStyle(color: AppTheme.cream),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: tr('note_optional'),
-                labelStyle: TextStyle(color: AppTheme.muted),
+                labelStyle: const TextStyle(color: AppTheme.muted),
               ),
             ),
           ],
