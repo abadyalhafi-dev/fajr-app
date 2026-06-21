@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/strings.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/alarm_settings_screen.dart';
@@ -29,15 +30,17 @@ class _MainNavigationState extends State<MainNavigation> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded), label: 'الرئيسية'),
+              icon: const Icon(Icons.home_rounded), label: tr('nav_home')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month_rounded), label: 'التقويم'),
+              icon: const Icon(Icons.calendar_month_rounded),
+              label: tr('nav_calendar')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.alarm_rounded), label: 'المنبه'),
+              icon: const Icon(Icons.alarm_rounded), label: tr('nav_alarm')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.settings_rounded), label: 'الإعدادات'),
+              icon: const Icon(Icons.settings_rounded),
+              label: tr('nav_settings')),
         ],
       ),
     );
