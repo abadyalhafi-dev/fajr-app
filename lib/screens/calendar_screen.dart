@@ -7,6 +7,7 @@ import '../services/prayer_service.dart';
 import '../services/storage_service.dart';
 import '../models/personal_event.dart';
 import '../widgets/prayer_list.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -42,11 +43,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final prayers = _prayer.prayersForDate(_selected);
     final hijri = HijriCalendar.fromDate(_selected);
     final hijriStr =
-        '${hijri.hDay} ${_hijriMonthAr(hijri.hMonth)} ${hijri.hYear} هـ';
+        '${hijri.hDay} ${hijriMonthName(hijri.hMonth)} ${hijri.hYear} ${tr('hijri_suffix')}';
     final dayEvents = _eventsFor(_selected);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('التقويم')),
+      appBar: AppBar(title: Text(tr('calendar_title'))),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.gold,
         foregroundColor: AppTheme.navy,
@@ -61,7 +62,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: TableCalendar(
-                  locale: 'ar',
+                  locale: appLang.value == 'ckb' ? 'ar' : appLang.value,
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2035, 12, 31),
                   focusedDay: _focused,
@@ -125,7 +126,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
             Align(
               alignment: Alignment.centerRight,
-              child: Text('أوقات الصلاة',
+              child: Text(tr('prayer_times'),
                   style: TextStyle(
                       color: AppTheme.muted,
                       fontSize: 15,
@@ -137,7 +138,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
-              child: Text('المناسبات',
+              child: Text(tr('events'),
                   style: TextStyle(
                       color: AppTheme.muted,
                       fontSize: 15,
@@ -149,7 +150,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Center(
-                    child: Text('لا توجد مناسبات في هذا اليوم',
+                    child: Text(tr('no_events'),
                         style:
                             TextStyle(color: AppTheme.muted, fontSize: 14)),
                   ),
@@ -187,7 +188,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.navyCard,
-        title: const Text('إضافة مناسبة',
+        title: Text(tr('add_event'),
             style: TextStyle(color: AppTheme.goldSoft)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -196,7 +197,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               controller: titleCtrl,
               style: const TextStyle(color: AppTheme.cream),
               decoration: const InputDecoration(
-                labelText: 'العنوان',
+                labelText: tr('title_label'),
                 labelStyle: TextStyle(color: AppTheme.muted),
               ),
             ),
@@ -205,7 +206,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               controller: noteCtrl,
               style: const TextStyle(color: AppTheme.cream),
               decoration: const InputDecoration(
-                labelText: 'ملاحظة (اختياري)',
+                labelText: tr('note_optional'),
                 labelStyle: TextStyle(color: AppTheme.muted),
               ),
             ),
@@ -214,7 +215,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('إلغاء',
+            child: Text(tr('cancel'),
                 style: TextStyle(color: AppTheme.muted)),
           ),
           ElevatedButton(
@@ -230,7 +231,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               _storage.saveEvents(_events);
               Navigator.pop(ctx);
             },
-            child: const Text('حفظ'),
+            child: Text(tr('save')),
           ),
         ],
       ),
@@ -240,23 +241,5 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _deleteEvent(PersonalEvent e) {
     setState(() => _events.removeWhere((x) => x.id == e.id));
     _storage.saveEvents(_events);
-  }
-
-  String _hijriMonthAr(int m) {
-    const months = [
-      'محرم',
-      'صفر',
-      'ربيع الأول',
-      'ربيع الآخر',
-      'جمادى الأولى',
-      'جمادى الآخرة',
-      'رجب',
-      'شعبان',
-      'رمضان',
-      'شوال',
-      'ذو القعدة',
-      'ذو الحجة',
-    ];
-    return months[(m - 1) % 12];
   }
 }
