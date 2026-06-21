@@ -21,24 +21,22 @@ class _CountdownCardState extends State<CountdownCard> {
   @override
   void initState() {
     super.initState();
-    _refresh();
+    _tick();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
   }
 
-  void _refresh() {
-    _next = _prayer.nextPrayer();
-    _tick();
-  }
-
   void _tick() {
-    if (_next == null) return;
+    // Recompute the next prayer every tick so the countdown stays correct
+    // even if the clock changes or the user switches city/location.
+    final next = _prayer.nextPrayer();
     final now = DateTime.now();
-    var diff = _next!.time.difference(now);
-    if (diff.isNegative) {
-      _refresh();
-      return;
-    }
-    setState(() => _remaining = diff);
+    var diff = next == null ? Duration.zero : next.time.difference(now);
+    if (diff.isNegative) diff = Duration.zero;
+    if (!mounted) return;
+    setState(() {
+      _next = next;
+      _remaining = diff;
+    });
   }
 
   @override
