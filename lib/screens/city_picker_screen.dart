@@ -81,7 +81,7 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Align(
+                  Align(
                     alignment: Alignment.centerRight,
                     child: Text(tr('country'),
                         style: TextStyle(
@@ -146,9 +146,9 @@ class _CityPickerScreenState extends State<CityPickerScreen> {
             ),
             Expanded(
               child: cities.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(tr('no_results'),
-                          style: TextStyle(color: AppTheme.muted)),
+                          style: const TextStyle(color: AppTheme.muted)),
                     )
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
