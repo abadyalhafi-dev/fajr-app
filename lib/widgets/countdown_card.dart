@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/prayer_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 /// Big hero card: shows the next prayer + a live countdown.
@@ -70,11 +71,11 @@ class _CountdownCardState extends State<CountdownCard> {
       ),
       child: Column(
         children: [
-          Text('الصلاة القادمة',
+          Text(tr('next_prayer'),
               style: TextStyle(color: AppTheme.muted, fontSize: 15)),
           const SizedBox(height: 6),
           Text(
-            _next?.arabicName ?? '—',
+            _next == null ? '—' : tr('prayer_${_next!.key}'),
             style: const TextStyle(
               color: AppTheme.goldSoft,
               fontSize: 38,
@@ -85,7 +86,7 @@ class _CountdownCardState extends State<CountdownCard> {
           Text(timeStr,
               style: const TextStyle(color: AppTheme.cream, fontSize: 18)),
           const SizedBox(height: 18),
-          Text('الوقت المتبقي',
+          Text(tr('remaining_time'),
               style: TextStyle(color: AppTheme.muted, fontSize: 13)),
           const SizedBox(height: 6),
           Text(
