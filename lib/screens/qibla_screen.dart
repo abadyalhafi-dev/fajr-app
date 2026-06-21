@@ -4,6 +4,7 @@ import 'package:flutter_compass/flutter_compass.dart';
 import 'package:adhan/adhan.dart';
 
 import '../services/storage_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 /// Qibla compass: shows the direction to the Kaaba from the saved location.
@@ -49,13 +50,13 @@ class _QiblaScreenState extends State<QiblaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('اتجاه القبلة')),
+      appBar: AppBar(title: Text(tr('qibla_direction'))),
       body: SafeArea(
         child: StreamBuilder<CompassEvent>(
           stream: FlutterCompass.events,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return _message('تعذّر قراءة البوصلة على هذا الجهاز');
+              return _message(tr('compass_read_error'));
             }
             if (!snapshot.hasData) {
               return const Center(
@@ -64,8 +65,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
             }
             final heading = snapshot.data!.heading;
             if (heading == null) {
-              return _message(
-                  'البوصلة غير متوفرة على هذا الجهاز\nجهازك قد لا يحتوي على حساس مغناطيسي');
+              return _message(tr('compass_unavailable'));
             }
 
             final diff = _normalize(_qibla - heading);
@@ -78,7 +78,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('اتجاه القبلة من موقعك',
+                  Text(tr('qibla_from_location'),
                       style:
                           TextStyle(color: AppTheme.muted, fontSize: 15)),
                   const SizedBox(height: 6),
@@ -111,7 +111,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                             alignment: Alignment.topCenter,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 12),
-                              child: Text('ش',
+                              child: Text(tr('north_letter'),
                                   style: TextStyle(
                                       color: AppTheme.muted,
                                       fontSize: 18,
@@ -137,8 +137,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
                   const SizedBox(height: 30),
                   Text(
                     aligned
-                        ? '✓ أنت تواجه القبلة'
-                        : 'أدر الهاتف حتى يشير السهم للأعلى',
+                        ? tr('facing_qibla')
+                        : tr('turn_phone_arrow'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: aligned ? Colors.green : AppTheme.cream,
@@ -146,11 +146,13 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 10),
-                  Text('اتجاهك الحالي: ${heading.toStringAsFixed(0)}°',
+                  Text(
+                      trp('current_heading',
+                          {'d': heading.toStringAsFixed(0)}),
                       style:
                           TextStyle(color: AppTheme.muted, fontSize: 13)),
                   const SizedBox(height: 18),
-                  Text('لمعايرة البوصلة، حرّك الهاتف على شكل ∞',
+                  Text(tr('calibrate_hint'),
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(color: AppTheme.muted, fontSize: 12)),
