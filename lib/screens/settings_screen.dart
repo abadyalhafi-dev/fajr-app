@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Rescheduling can fail on its own; location is still saved.
       }
     } catch (e) {
-      result = LocationResult(false, 'خطأ: $e');
+      result = LocationResult(false, '${tr('error_prefix')}$e');
     } finally {
       if (mounted) setState(() => _loadingLocation = false);
     }
@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('الإعدادات')),
+      appBar: AppBar(title: Text(tr('settings_title'))),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -125,7 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         const Icon(Icons.location_on, color: AppTheme.gold),
                         const SizedBox(width: 10),
-                        const Text('الموقع',
+                        Text(tr('location'),
                             style: TextStyle(
                                 color: AppTheme.goldSoft,
                                 fontSize: 16,
@@ -134,9 +134,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'المدينة: ${_storage.cityName}\n'
-                      'خط العرض: ${_storage.latitude.toStringAsFixed(4)}\n'
-                      'خط الطول: ${_storage.longitude.toStringAsFixed(4)}',
+                      '${tr('city_label')}: ${_storage.cityName}\n'
+                      '${tr('latitude')}: ${_storage.latitude.toStringAsFixed(4)}\n'
+                      '${tr('longitude')}: ${_storage.longitude.toStringAsFixed(4)}',
                       style: const TextStyle(
                           color: AppTheme.muted, fontSize: 13, height: 1.6),
                     ),
@@ -151,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   strokeWidth: 2, color: AppTheme.navy),
                             )
                           : const Icon(Icons.my_location),
-                      label: const Text('تحديد الموقع تلقائيًا (GPS)'),
+                      label: Text(tr('gps_auto')),
                     ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
@@ -168,7 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         side: const BorderSide(color: AppTheme.gold),
                       ),
                       icon: const Icon(Icons.location_city),
-                      label: const Text('اختيار المدينة يدويًا'),
+                      label: Text(tr('manual_city')),
                     ),
                   ],
                 ),
@@ -181,9 +181,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.calculate, color: AppTheme.gold),
-                title: const Text('طريقة الحساب',
+                title: Text(tr('calc_method'),
                     style: TextStyle(color: AppTheme.cream)),
-                subtitle: const Text('أم القرى',
+                subtitle: Text(tr('umm_alqura'),
                     style: TextStyle(color: AppTheme.muted)),
               ),
             ),
@@ -199,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     const Align(
                       alignment: Alignment.centerRight,
-                      child: Text('تعديل الأوقات (بالدقائق)',
+                      child: Text(tr('adjust_times'),
                           style: TextStyle(
                               color: AppTheme.goldSoft,
                               fontSize: 15,
@@ -214,7 +214,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             SizedBox(
                               width: 60,
-                              child: Text(p['name']!,
+                              child: Text(tr('prayer_'),
                                   style: const TextStyle(
                                       color: AppTheme.cream)),
                             ),
@@ -261,7 +261,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     const Align(
                       alignment: Alignment.centerRight,
-                      child: Text('وقت الإقامة (دقائق بعد الأذان)',
+                      child: Text(tr('iqama_time'),
                           style: TextStyle(
                               color: AppTheme.goldSoft,
                               fontSize: 15,
@@ -276,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             SizedBox(
                               width: 60,
-                              child: Text(p['name']!,
+                              child: Text(tr('prayer_'),
                                   style: const TextStyle(
                                       color: AppTheme.cream)),
                             ),
@@ -318,10 +318,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Card(
               child: ListTile(
                 leading: const Icon(Icons.security, color: AppTheme.gold),
-                title: const Text('أذونات التنبيه',
+                title: Text(tr('alarm_permissions'),
                     style: TextStyle(color: AppTheme.cream)),
                 subtitle: const Text(
-                    'فعّل الأذونات وتجاهل تحسين البطارية لضمان عمل المنبه',
+                    tr('permissions_desc'),
                     style: TextStyle(color: AppTheme.muted)),
                 trailing: const Icon(Icons.chevron_left, color: AppTheme.muted),
                 onTap: () async {
@@ -332,7 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 16),
             Center(
-              child: Text('تطبيق منبه الفجر • إصدار 1.0',
+              child: Text(tr('app_version'),
                   style: TextStyle(color: AppTheme.muted, fontSize: 12)),
             ),
           ],
