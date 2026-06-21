@@ -214,7 +214,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             SizedBox(
                               width: 60,
-                              child: Text(tr('prayer_'),
+                              child: Text(tr('prayer_${p['key']}'),
                                   style: const TextStyle(
                                       color: AppTheme.cream)),
                             ),
@@ -276,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             SizedBox(
                               width: 60,
-                              child: Text(tr('prayer_'),
+                              child: Text(tr('prayer_${p['key']}'),
                                   style: const TextStyle(
                                       color: AppTheme.cream)),
                             ),
