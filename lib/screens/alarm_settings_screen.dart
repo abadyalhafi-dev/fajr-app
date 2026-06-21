@@ -5,6 +5,7 @@ import 'dart:io';
 
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
+import '../l10n/strings.dart';
 import '../theme/app_theme.dart';
 
 class AlarmSettingsScreen extends StatefulWidget {
@@ -19,12 +20,12 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
   final AlarmService _alarm = AlarmService();
 
   // All five prayers, each individually toggleable. Fajr defaults ON.
-  final List<Map<String, String>> _prayers = const [
-    {'key': 'fajr', 'name': 'الفجر'},
-    {'key': 'dhuhr', 'name': 'الظهر'},
-    {'key': 'asr', 'name': 'العصر'},
-    {'key': 'maghrib', 'name': 'المغرب'},
-    {'key': 'isha', 'name': 'العشاء'},
+  final List<String> _prayerKeys = const [
+    'fajr',
+    'dhuhr',
+    'asr',
+    'maghrib',
+    'isha',
   ];
 
   Future<void> _pickSound({required bool isMain}) async {
@@ -49,14 +50,14 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
   }
 
   String _fileName(String? path) {
-    if (path == null) return 'لم يتم الاختيار';
+    if (path == null) return tr('not_selected');
     return path.split('/').last;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('المنبه')),
+      appBar: AppBar(title: Text(tr('alarm_title'))),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -70,21 +71,20 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   children: [
                     const Align(
                       alignment: Alignment.centerRight,
-                      child: Text('أذان الصلوات',
+                      child: Text(tr('prayers_adhan'),
                           style: TextStyle(
                               color: AppTheme.goldSoft,
                               fontSize: 16,
                               fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: 4),
-                    ..._prayers.map((p) => SwitchListTile(
+                    ..._prayerKeys.map((key) => SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(p['name']!,
+                          title: Text(tr('prayer_$key'),
                               style: const TextStyle(color: AppTheme.cream)),
-                          value: _storage.isPrayerAlarmEnabled(p['key']!),
+                          value: _storage.isPrayerAlarmEnabled(key),
                           onChanged: (v) async {
-                            await _storage.setPrayerAlarmEnabled(
-                                p['key']!, v);
+                            await _storage.setPrayerAlarmEnabled(key, v);
                             setState(() {});
                           },
                         )),
@@ -104,10 +104,10 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   children: [
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('التنبيه المبكر للفجر',
+                      title: Text(tr('fajr_prealarm'),
                           style: TextStyle(color: AppTheme.cream)),
                       subtitle: Text(
-                          'قبل ${_storage.preAlarmMinutes} دقيقة من الفجر',
+                          trp('prealarm_before', {'n': ''}),
                           style: const TextStyle(color: AppTheme.muted)),
                       value: _storage.preAlarmEnabled,
                       onChanged: (v) async {
@@ -117,7 +117,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                     ),
                     Row(
                       children: [
-                        const Text('الدقائق:',
+                        Text(tr('minutes_label'),
                             style: TextStyle(color: AppTheme.muted)),
                         Expanded(
                           child: Slider(
@@ -152,7 +152,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   contentPadding: EdgeInsets.zero,
                   secondary:
                       const Icon(Icons.vibration, color: AppTheme.gold),
-                  title: const Text('الاهتزاز عند التنبيه',
+                  title: Text(tr('vibration_on_alarm'),
                       style: TextStyle(color: AppTheme.cream)),
                   value: _storage.vibrationEnabled,
                   onChanged: (v) async {
@@ -174,7 +174,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   children: [
                     const Align(
                       alignment: Alignment.centerRight,
-                      child: Text('الأصوات',
+                      child: Text(tr('sounds'),
                           style: TextStyle(
                               color: AppTheme.goldSoft,
                               fontSize: 16,
@@ -185,7 +185,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                       leading:
                           const Icon(Icons.volume_up, color: AppTheme.gold),
-                      title: const Text('صوت أذان الفجر',
+                      title: Text(tr('fajr_adhan_sound'),
                           style: TextStyle(color: AppTheme.cream)),
                       subtitle: Text(_fileName(_storage.fajrSoundPath),
                           style: const TextStyle(
@@ -199,7 +199,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                       leading: const Icon(Icons.notifications_active,
                           color: AppTheme.gold),
-                      title: const Text('صوت التنبيه المبكر',
+                      title: Text(tr('prealarm_sound'),
                           style: TextStyle(color: AppTheme.cream)),
                       subtitle: Text(_fileName(_storage.preAlarmSoundPath),
                           style: const TextStyle(
@@ -222,7 +222,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('تم تحديث جميع التنبيهات',
+                        content: Text(tr('all_alarms_updated'),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
@@ -235,7 +235,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('خطأ: $e',
+                        content: Text('${tr('error_prefix')}$e',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
@@ -247,7 +247,7 @@ class _AlarmSettingsScreenState extends State<AlarmSettingsScreen> {
                 }
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('حفظ وتحديث التنبيهات'),
+              label: Text(tr('save_update_alarms')),
             ),
           ],
         ),
