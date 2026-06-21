@@ -62,6 +62,11 @@ class StorageService {
   Future<void> setVibrationEnabled(bool value) =>
       _prefs.setBool(_kVibration, value);
 
+  // App language code (ar, en, fa, tr, ckb). null = not yet chosen.
+  static const _kLang = 'app_language';
+  String? get savedLanguage => _prefs.getString(_kLang);
+  Future<void> setLanguage(String code) => _prefs.setString(_kLang, code);
+
   // Fajr pre-alarm (15 min before) toggle — default ON
   static const _kPreAlarmEnabled = 'pre_alarm_enabled';
   bool get preAlarmEnabled => _prefs.getBool(_kPreAlarmEnabled) ?? true;
