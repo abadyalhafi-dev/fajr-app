@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:geolocator/geolocator.dart';
 import 'storage_service.dart';
 import '../data/cities.dart';
+import '../l10n/strings.dart';
 
 class LocationResult {
   final bool success;
@@ -17,19 +18,19 @@ class LocationService {
   Future<LocationResult> fetchAndSave() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return LocationResult(false, 'خدمة الموقع غير مفعّلة على الهاتف');
+      return LocationResult(false, tr('loc_service_disabled'));
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return LocationResult(false, 'تم رفض إذن الموقع');
+        return LocationResult(false, tr('loc_denied'));
       }
     }
     if (permission == LocationPermission.deniedForever) {
       return LocationResult(
-          false, 'إذن الموقع مرفوض دائمًا، فعّله من إعدادات الهاتف');
+          false, tr('loc_denied_forever'));
     }
 
     try {
@@ -42,15 +43,15 @@ class LocationService {
       // home screen shows where the user actually is (not the old label).
       final name = _nearestCityName(pos.latitude, pos.longitude);
       await _storage.saveLocation(pos.latitude, pos.longitude, name);
-      return LocationResult(true, 'تم تحديث الموقع: $name');
+      return LocationResult(true, trp('loc_updated', {'city': name}));
     } catch (e) {
-      return LocationResult(false, 'تعذّر الحصول على الموقع: $e');
+      return LocationResult(false, tr('loc_failed') + e.toString());
     }
   }
 
   /// Nearest city (by name) from the offline dataset. Works without internet.
   String _nearestCityName(double lat, double lng) {
-    String best = 'موقعي';
+    String best = tr('my_location');
     double bestDist = double.infinity;
     for (final country in kCountries) {
       for (final city in country.cities) {
