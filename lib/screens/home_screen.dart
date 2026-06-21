@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hijri/hijri_calendar.dart';
@@ -21,6 +22,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PrayerService _prayer = PrayerService();
   final StorageService _storage = StorageService();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Re-read location, dates and prayer list every second so the screen
+    // stays current — including after returning from settings or a city change.
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: RefreshIndicator(
           color: AppTheme.gold,
           backgroundColor: AppTheme.navyCard,
-          onRefresh: () async => setState(() {}),
+          onRefresh: () async {
+            setState(() {});
+            await Future.delayed(const Duration(milliseconds: 400));
+          },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
