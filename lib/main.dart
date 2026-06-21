@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:alarm/alarm.dart';
 
 import 'theme/app_theme.dart';
+import 'l10n/strings.dart';
 import 'main_navigation.dart';
 import 'services/storage_service.dart';
 import 'services/alarm_service.dart';
@@ -32,26 +33,24 @@ Future<void> _ensureFullScreenIntent() async {
       context: ctx,
       builder: (c) => AlertDialog(
         backgroundColor: AppTheme.navyCard,
-        title: const Text('إذن مهم للمنبه',
-            style: TextStyle(color: AppTheme.goldSoft)),
-        content: const Text(
-          'حتى تظهر شاشة المنبه فوق الشاشة المقفلة عند الأذان، يجب تفعيل '
-          '«التنبيهات في وضع ملء الشاشة».\n\nاضغط «فتح الإعدادات»، ثم فعّل '
-          'منبه الفجر من القائمة.',
-          style: TextStyle(color: AppTheme.cream, height: 1.6),
+        title: Text(tr('fsi_title'),
+            style: const TextStyle(color: AppTheme.goldSoft)),
+        content: Text(
+          tr('fsi_body'),
+          style: const TextStyle(color: AppTheme.cream, height: 1.6),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('لاحقًا',
-                style: TextStyle(color: AppTheme.muted)),
+            child: Text(tr('later'),
+                style: const TextStyle(color: AppTheme.muted)),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(c);
               _nativeChannel.invokeMethod('openFullScreenIntentSettings');
             },
-            child: const Text('فتح الإعدادات'),
+            child: Text(tr('open_settings')),
           ),
         ],
       ),
@@ -65,9 +64,28 @@ void main() async {
   try {
     await initializeDateFormatting('ar', null);
   } catch (_) {}
+  for (final l in ['en', 'fa', 'tr']) {
+    try {
+      await initializeDateFormatting(l, null);
+    } catch (_) {}
+  }
   try {
     await StorageService().init();
   } catch (_) {}
+
+  // Decide the app language: saved choice, else the phone's language, else Arabic.
+  try {
+    final saved = StorageService().savedLanguage;
+    if (saved != null && kSupportedLangs.contains(saved)) {
+      appLang.value = saved;
+    } else {
+      var dev = WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+      if (dev == 'ku') dev = 'ckb'; // map Kurdish to Sorani
+      appLang.value = kSupportedLangs.contains(dev) ? dev : 'ar';
+    }
+  } catch (_) {
+    appLang.value = 'ar';
+  }
   try {
     await AlarmService().init();
   } catch (_) {}
@@ -78,7 +96,7 @@ void main() async {
       final payload = alarm.payload ?? '';
       final isMain = payload.startsWith(AlarmService.payloadMain);
       final key = payload.contains(':') ? payload.split(':').last : 'fajr';
-      final name = PrayerService.arabicNames[key] ?? 'الصلاة';
+      final name = tr('prayer_$key');
       navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (_) => AlarmRingingScreen(
@@ -120,25 +138,39 @@ class _FajrAppState extends State<FajrApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'منبه الفجر',
-      debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
-      theme: AppTheme.dark,
-      locale: const Locale('ar'),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('ar')],
-      builder: (context, child) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: child!,
+    return ValueListenableBuilder<String>(
+      valueListenable: appLang,
+      builder: (context, lang, _) {
+        // ckb (Sorani Kurdish) isn't a Material locale; use Arabic as the RTL
+        // base for Material widgets while our own strings stay Kurdish.
+        final materialLocale = lang == 'ckb' ? 'ar' : lang;
+        return MaterialApp(
+          title: tr('app_title'),
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          theme: AppTheme.dark,
+          locale: Locale(materialLocale),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ar'),
+            Locale('en'),
+            Locale('fa'),
+            Locale('tr'),
+          ],
+          builder: (context, child) {
+            return Directionality(
+              textDirection:
+                  isRtlLang(lang) ? TextDirection.rtl : TextDirection.ltr,
+              child: child!,
+            );
+          },
+          home: const MainNavigation(),
         );
       },
-      home: const MainNavigation(),
     );
   }
 }
