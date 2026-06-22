@@ -92,7 +92,7 @@ class _CountdownCardState extends State<CountdownCard> {
           Text(
             '${_two(h)}:${_two(m)}:${_two(s)}',
             style: const TextStyle(
-              color: AppTheme.cream,
+              color: AppTheme.amber,
               fontSize: 34,
               fontWeight: FontWeight.w700,
               letterSpacing: 2,
