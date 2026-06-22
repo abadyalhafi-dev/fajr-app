@@ -29,7 +29,7 @@ class _MosquePainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [AppTheme.navyLight, AppTheme.navy],
+        colors: [Color(0xFFE7ECF9), Color(0xFFFCEDE4)],
       ).createShader(bgRect);
     canvas.save();
     final clip = Path()..addOval(bgRect);
@@ -40,16 +40,16 @@ class _MosquePainter extends CustomPainter {
     final sunCenter = Offset(w * 0.5, h * 0.62);
     final sunPaint = Paint()
       ..shader = RadialGradient(
-        colors: [AppTheme.gold, AppTheme.gold.withOpacity(0.0)],
+        colors: [AppTheme.amber, AppTheme.amber.withOpacity(0.0)],
       ).createShader(Rect.fromCircle(center: sunCenter, radius: w * 0.42));
     canvas.drawCircle(sunCenter, w * 0.42, sunPaint);
 
     // Sun disc
-    final discPaint = Paint()..color = AppTheme.goldSoft;
+    final discPaint = Paint()..color = AppTheme.amber;
     canvas.drawCircle(sunCenter, w * 0.14, discPaint);
 
     // ---- Mosque silhouette ----
-    final mosque = Paint()..color = AppTheme.navy.withOpacity(0.95);
+    final mosque = Paint()..color = AppTheme.gold.withOpacity(0.95);
     final cx = w * 0.5;
 
     // Main dome
@@ -100,7 +100,7 @@ class _MosquePainter extends CustomPainter {
 
     // Gold baseline under building
     final basePaint = Paint()
-      ..color = AppTheme.gold
+      ..color = AppTheme.amber
       ..strokeWidth = h * 0.012;
     canvas.drawLine(
       Offset(w * 0.12, h * 0.78),
