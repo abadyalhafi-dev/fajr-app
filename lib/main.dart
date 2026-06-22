@@ -165,7 +165,12 @@ class _FajrAppState extends State<FajrApp> {
             return Directionality(
               textDirection:
                   isRtlLang(lang) ? TextDirection.rtl : TextDirection.ltr,
-              child: child!,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.backgroundGradient,
+                ),
+                child: child!,
+              ),
             );
           },
           home: const MainNavigation(),
