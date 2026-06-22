@@ -60,7 +60,7 @@ class _AlarmRingingScreenState extends State<AlarmRingingScreen> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: AppTheme.navy,
+        backgroundColor: AppTheme.alarmBg,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(28),
@@ -78,7 +78,7 @@ class _AlarmRingingScreenState extends State<AlarmRingingScreen> {
                           : 'اقترب وقت ${widget.prayerName}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: AppTheme.goldSoft,
+                        color: AppTheme.alarmAccent,
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
                       ),
@@ -87,13 +87,13 @@ class _AlarmRingingScreenState extends State<AlarmRingingScreen> {
                     Text(
                       widget.isMain ? 'الصلاة خير من النوم' : 'استعد للصلاة',
                       style:
-                          const TextStyle(color: AppTheme.cream, fontSize: 18),
+                          const TextStyle(color: AppTheme.alarmText, fontSize: 18),
                     ),
                     const SizedBox(height: 6),
                     const Text(
                       'اضغط زر الصوت أو إيقاف لإيقاف المنبه',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppTheme.muted, fontSize: 13),
+                      style: TextStyle(color: AppTheme.alarmMuted, fontSize: 13),
                     ),
                   ],
                 ),
@@ -101,8 +101,8 @@ class _AlarmRingingScreenState extends State<AlarmRingingScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.gold,
-                      foregroundColor: AppTheme.navy,
+                      backgroundColor: AppTheme.alarmAccent,
+                      foregroundColor: AppTheme.alarmBg,
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
